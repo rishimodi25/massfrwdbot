@@ -1,29 +1,26 @@
-import os
 import asyncio
 from telethon import TelegramClient, events
+from telethon.sessions import StringSession
+import os
 
+# Get credentials from environment variables
 api_id = int(os.getenv("API_ID"))
 api_hash = os.getenv("API_HASH")
+string_session = os.getenv("STRING_SESSION")  # this will be set on Railway
 
-source_channel = "Astrology_Cou"   # without @
-target_channel = "astrologynumerologyvastu"     # without @
+# Create the client
+client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
-client = TelegramClient("session", api_id, api_hash)
+# Example: forward messages from source_channel to target_channel
+source_channel = "Astrology_Cou"
+target_channel = "astrologynumerologyvastu"    # replace with your channel
 
 @client.on(events.NewMessage(chats=source_channel))
 async def handler(event):
-    text = event.message.text
-    if not text:
-        return
-
-    # Edit words
-    text = text.replace("@Slayber007", "@vishnuisbck")
-
-    await client.send_message(target_channel, text)
+    await event.message.forward_to(target_channel)
 
 async def main():
-    await client.start()
-    print("Userbot is running...")
+    print("Bot is running...")
     await client.run_until_disconnected()
 
 asyncio.run(main())
