@@ -3,24 +3,24 @@ from telethon import TelegramClient, events
 from telethon.sessions import StringSession
 import os
 
-# Get credentials from environment variables
 api_id = int(os.getenv("API_ID"))
 api_hash = os.getenv("API_HASH")
-string_session = os.getenv("STRING_SESSION")  # this will be set on Railway
+string_session = os.getenv("STRING_SESSION")
 
-# Create the client
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
-# Example: forward messages from source_channel to target_channel
-source_channel = "Astrology_Cou"
-target_channel = "astrologynumerologyvastu"    # replace with your channel
-
-@client.on(events.NewMessage(chats=source_channel))
-async def handler(event):
-    await event.message.forward_to(target_channel)
+source_channel = "Astrology_Cou"  # without @
+target_channel = "astrologynumerologyvastu"   # with @
 
 async def main():
-    print("Bot is running...")
-    await client.run_until_disconnected()
+    print("Connecting to Telegram...")
+    await client.start()  # ensures client is connected
+    print("Bot is running and connected!")
+
+    @client.on(events.NewMessage(chats=source_channel))
+    async def handler(event):
+        await event.message.forward_to(target_channel)
+
+    await client.run_until_disconnected()  # keeps bot alive
 
 asyncio.run(main())
