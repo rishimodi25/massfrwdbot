@@ -10,7 +10,7 @@ string_session = os.getenv("STRING_SESSION")
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
 source_channel = "Astrology_Cou"
-target_channel = "astrologynumerologyvastu"
+target_channel = "@astrologynumerologyvastu"
 
 async def main():
     await client.start()
@@ -21,17 +21,40 @@ async def main():
 
     print("Channels OK")
 
-    # Only test 5 messages first
-    async for message in client.iter_messages(source, limit=5):
-        print("Forwarding:", message.id)
-        await message.forward_to(target)
+    async for message in client.iter_messages(source, limit=100):
+        try:
+            print("Copying:", message.id)
+
+            if message.text:
+                await client.send_message(target, message.text)
+
+            elif message.media:
+                await client.send_file(
+                    target,
+                    message.media,
+                    caption=message.text
+                )
+
+            await asyncio.sleep(1)
+
+        except Exception as e:
+            print("Skipped message:", message.id, e)
 
     print("Now listening...")
 
     @client.on(events.NewMessage(chats=source))
     async def handler(event):
-        print("New message detected")
-        await event.message.forward_to(target)
+        msg = event.message
+
+        if msg.text:
+            await client.send_message(target, msg.text)
+
+        elif msg.media:
+            await client.send_file(
+                target,
+                msg.media,
+                caption=msg.text
+            )
 
     await client.run_until_disconnected()
 
