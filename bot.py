@@ -10,7 +10,7 @@ string_session = os.getenv("STRING_SESSION")
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
 source_channel = "Astrology_Cou"
-target_channel = "@astrologynumerologyvastu"
+target_channel = "astrologynumerologyvastu"
 
 async def main():
     await client.start()
